@@ -1,43 +1,98 @@
 generator client {
-    provider = "prisma-client"
-    output   = "../generated/prisma"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-    provider = "postgresql"
+  provider = "postgresql"
 }
 
 enum ChatType {
-    DIRECT
-    GROUP
+  DIRECT
+  GROUP
 }
 
 model User {
-    id         String   @id() @default(uuid())
-    name       String
-    email      String
-    phone      String?
-    password   String
-    created_at DateTime
+  id            String    @id @default(uuid())
+  name          String
+  email         String
+  phone         String?
+  password      String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
 }
 
 model Conversations {
-    id         String   @id() @default(uuid())
-    type       ChatType
-    created_at DateTime
+  id         String   @id @default(uuid())
+  type       ChatType
+  created_at DateTime
 }
 
 model Conversation_Members {
-    id              String   @id() @default(uuid())
-    conversation_id String
-    user_id         String
-    joined_at       DateTime
+  id              String   @id @default(uuid())
+  conversation_id String
+  user_id         String
+  joined_at       DateTime
 }
 
 model Messages {
-    id              String   @id() @default(uuid())
-    conversation_id String
-    sender_id       String
-    content         String
-    created_at      DateTime
+  id              String   @id @default(uuid())
+  conversation_id String
+  sender_id       String
+  content         String
+  created_at      DateTime
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
