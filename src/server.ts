@@ -1,7 +1,7 @@
 import http from "http";
 import app from "./app";
 import { envVar } from "./config/env";
-import { initSocket } from "./config/socket";
+import { initSocket } from "./socket/socket";
 
 const bootstrap = async () => {
   try {
@@ -10,9 +10,7 @@ const bootstrap = async () => {
     initSocket(httpServer);
 
     httpServer.listen(envVar.port, () => {
-      console.log(
-        `Server is running on http://localhost:${envVar.port}`
-      );
+      console.log(`Server is running on http://localhost:${envVar.port}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

@@ -1,6 +1,9 @@
 import { Server } from "socket.io";
 import http from "http";
-import { envVar } from "./env";
+import { envVar } from "../config/env";
+import { registerConversationEvents } from "./events/conversation.events";
+import { registerMessageEvents } from "./events/message.events";
+import { registerPresenceEvents } from "./events/presence.events";
 
 let io: Server;
 
@@ -15,9 +18,9 @@ export const initSocket = (httpServer: http.Server) => {
   io.on("connection", (socket) => {
     console.log("Socket Connected:", socket.id);
 
-    socket.on("disconnect", () => {
-      console.log("Socket Disconnected:", socket.id);
-    });
+    registerConversationEvents(socket);
+    registerMessageEvents(socket);
+    registerPresenceEvents(socket);
   });
 };
 
