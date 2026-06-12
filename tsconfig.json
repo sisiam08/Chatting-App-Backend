@@ -17,6 +17,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
   },
-  "include": ["src", "prisma.config.ts"],
+  "include": ["src", "prisma.config.ts", "../user"],
   "exclude": ["node_modules", "dist"]
 }

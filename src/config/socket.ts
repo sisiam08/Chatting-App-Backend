@@ -1,6 +1,10 @@
 import { Server } from "socket.io";
 import http from "http";
 import { envVar } from "./env";
+import { socketAuth } from "../middleware/socketAuth";
+import { MessageSocketEvents } from "../modules/message/message.events";
+import { ConversationSocketEvents } from "../modules/conversation/conversation.events";
+import { PresenceSocketEvents } from "../modules/presence/presence.events";
 
 let io: Server;
 
@@ -12,12 +16,21 @@ export const initSocket = (httpServer: http.Server) => {
     },
   });
 
-  io.on("connection", (socket) => {
-    console.log("Socket Connected:", socket.id);
+  io.use(socketAuth);
 
-    socket.on("disconnect", () => {
-      console.log("Socket Disconnected:", socket.id);
+  io.on("connection", (socket) => {
+    socket.join(`user-room:${socket.data.user.id}`);
+
+    console.log("Socket Connected with :", {
+      socketId: socket.id,
+      userId: socket.data.user.id,
+      userName: socket.data.user.name,
+      userEmail: socket.data.user.email,
     });
+
+    PresenceSocketEvents(socket);
+    ConversationSocketEvents(socket);
+    MessageSocketEvents(socket);
   });
 };
 
