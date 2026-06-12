@@ -5,11 +5,11 @@ const createOrGetDirectConversation = async (req: Request, res: Response) => {
   try {
     const { receiverId } = req.body;
 
-    const senderId = (req as any).user?.id;
+    const userId = (req as any).user?.id;
 
     const conversation =
       await ConversationServices.createOrGetDirectConversation(
-        senderId,
+        userId,
         receiverId,
       );
 

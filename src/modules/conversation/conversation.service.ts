@@ -1,7 +1,8 @@
+import { ChatType } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
-const createOrGetDirectConversation = async (userA: string, userB: string) => {
-  const sorted = [userA, userB].sort();
+const createOrGetDirectConversation = async (senderUserId: string, receiverUserId: string) => {
+  const sorted = [senderUserId, receiverUserId].sort();
 
   const directKey = `${sorted[0]}:${sorted[1]}`;
 
@@ -22,10 +23,10 @@ const createOrGetDirectConversation = async (userA: string, userB: string) => {
 
   const conversation = await prisma.conversation.create({
     data: {
-      type: "DIRECT",
+      type: ChatType.DIRECT,
       directKey,
       members: {
-        create: [{ userId: userA }, { userId: userB }],
+        create: [{ userId: senderUserId }, { userId: receiverUserId }],
       },
     },
     include: {

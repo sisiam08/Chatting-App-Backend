@@ -21,13 +21,15 @@ model User {
   emailVerified Boolean @default(false)
   image         String?
 
+  isOnline   Boolean
+  lastSeenAt DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   sessions Session[]
   accounts Account[]
 
-  // Chat Relations
   conversationMembers ConversationMember[]
   sentMessages        Message[]
 
@@ -72,8 +74,10 @@ model Message {
 
   conversationId String
   senderId       String
+  content        String
 
-  content String
+  deliveredAt DateTime?
+  seenAt      DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

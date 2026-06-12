@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { IRoute } from "../interfaces";
-import { ConversationRoutes } from "../module/conversation/conversation.route";
-import { MessageRoutes } from "../module/message/message.route";
+import { ConversationRoutes } from "../modules/conversation/conversation.route";
+import { MessageRoutes } from "../modules/message/message.route";
 
 const router = Router();
 

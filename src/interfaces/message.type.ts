@@ -1,5 +1,10 @@
 export interface ICreateMessagePayload {
   conversationId: string;
-  senderId: string;
+  userId: string;
+  content: string;
+}
+
+export interface ISocketMessagePayload {
+  conversationId: string;
   content: string;
 }
