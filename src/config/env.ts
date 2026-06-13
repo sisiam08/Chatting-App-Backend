@@ -11,8 +11,13 @@ export const envVar = {
     betterAuthUrl: process.env.BETTER_AUTH_URL!,
     betterAuthSecret: process.env.BETTER_AUTH_SECRET,
   },
-  google:{
+  google: {
     gooleClientId: process.env.GOOGLE_CLIENT_ID,
     gooleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  }
+  },
+  cloudinary: {
+    cloudinaryCloudName: process.env.CLOUDEINARY_CLOUD_NAME!,
+    cloudinaryApiKey: process.env.CLOUDEINARY_API_KEY!,
+    cloudinaryApiSecret: process.env.CLOUDEINARY_API_SECRET!,
+  },
 };

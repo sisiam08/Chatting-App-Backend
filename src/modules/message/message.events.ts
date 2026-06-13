@@ -1,8 +1,10 @@
-import { getIO } from "../../config/socket";
+import { getIO } from "../../config/socket.config";
+import { MessageType } from "../../generated/prisma/enums";
 import { ISocketMessagePayload } from "../../interfaces";
+import { broadcastNewMessage } from "./message.helper";
 import { MessageServices } from "./message.service";
 
-const sendMessage = (socket: any) => {
+const sendTextMessage = (socket: any) => {
   socket.on("message:send", async (data: ISocketMessagePayload) => {
     const { conversationId, content } = data;
     const userId = socket.data.user.id;
@@ -16,29 +18,10 @@ const sendMessage = (socket: any) => {
       conversationId,
       userId,
       content,
+      type: MessageType.TEXT,
     });
 
-    const receiverId = message.conversation.members.find(
-      (member) => member.userId !== userId,
-    )?.userId!;
-
-    getIO()
-      .to(`conversation:${conversationId}`)
-      .emit("message:new", message, async () => {
-        if (connectedDevicesCount > 0) {
-          try {
-            await MessageServices.updateMessageDelivered(message.id);
-          } catch (err) {
-            console.error("Error updating message delivered status:", err);
-          }
-        }
-      });
-    getIO().to(`user-room:${receiverId}`).emit("notification:new", message);
-
-    const userRoom = getIO().sockets.adapter.rooms.get(
-      `user-room:${receiverId}`,
-    );
-    const connectedDevicesCount = userRoom ? userRoom.size : 0;
+    await broadcastNewMessage(conversationId, userId, message);
   });
 };
 
@@ -61,6 +44,6 @@ const seenMessage = (socket: any) => {
 };
 
 export const MessageSocketEvents = (socket: any) => {
-  sendMessage(socket);
+  sendTextMessage(socket);
   seenMessage(socket);
 };

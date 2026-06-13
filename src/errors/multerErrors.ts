@@ -1,0 +1,67 @@
+import { Request, Response, NextFunction } from "express";
+import multer from "multer";
+
+export const handleMulterErrors = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (err instanceof multer.MulterError) {
+    // File size exceeds limit
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "File size exceeds the maximum limit of 50MB",
+        errorSource: [
+          {
+            path: "file",
+            message: "File size exceeds the maximum limit of 50MB",
+          },
+        ],
+      });
+    }
+
+    // Number of files exceeds limit
+    if (err.code === "LIMIT_FILE_COUNT") {
+      return res.status(400).json({
+        success: false,
+        message: "Only one file is allowed per upload",
+        errorSource: [
+          {
+            path: "file",
+            message: "Only one file is allowed per upload",
+          },
+        ],
+      });
+    }
+
+    // Unexpected field name
+    if (err.code === "LIMIT_UNEXPECTED_FILE") {
+      return res.status(400).json({
+        success: false,
+        message: "Unexpected field name. Expected 'image' field",
+        errorSource: [
+          {
+            path: "file",
+            message: "Unexpected field name. Expected 'image' field",
+          },
+        ],
+      });
+    }
+
+    // Generic multer error
+    return res.status(400).json({
+      success: false,
+      message: `File upload error: ${err.message}`,
+      errorSource: [
+        {
+          path: "file",
+          message: err.message,
+        },
+      ],
+    });
+  }
+
+  next(err);
+};

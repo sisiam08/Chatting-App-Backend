@@ -1,4 +1,4 @@
-import { Prisma } from "../../generated/prisma/client";
+import { MessageType } from "../../generated/prisma/enums";
 import { ICreateMessagePayload } from "../../interfaces";
 import { prisma } from "../../lib/prisma";
 
@@ -6,12 +6,20 @@ const sendMessage = async ({
   conversationId,
   userId,
   content,
+  type,
+  fileName,
+  fileSize,
 }: ICreateMessagePayload) => {
   return await prisma.message.create({
     data: {
       conversationId,
       senderId: userId,
       content,
+      type,
+      ...((type === MessageType.IMAGE || type === MessageType.FILE) && {
+        fileName,
+        fileSize,
+      }),
     },
     include: {
       conversation: {
@@ -99,7 +107,7 @@ const updateMessageSeen = async (conversationId: string, userId: string) => {
   });
 };
 
-const offlineMessages = async (userId: string) => {
+const getOfflineMessages = async (userId: string) => {
   const messages = await prisma.message.findMany({
     where: {
       conversation: {
@@ -128,5 +136,5 @@ export const MessageServices = {
   getMessages,
   updateMessageDelivered,
   updateMessageSeen,
-  offlineMessages,
+  getOfflineMessages,
 };

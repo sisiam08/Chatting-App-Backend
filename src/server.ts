@@ -1,7 +1,7 @@
 import http from "http";
 import app from "./app";
 import { envVar } from "./config/env";
-import { initSocket } from "./config/socket";
+import { initSocket } from "./config/socket.config";
 
 const bootstrap = async () => {
   try {

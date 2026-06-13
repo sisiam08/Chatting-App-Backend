@@ -1,4 +1,4 @@
-import { getIO } from "../../config/socket";
+import { getIO } from "../../config/socket.config";
 import { MessageServices } from "../message/message.service";
 import { PresenceServices } from "./presence.service";
 
@@ -14,13 +14,12 @@ const onlineUser = async (socket: any) => {
         true,
       );
 
-      const offlineMessages = await MessageServices.offlineMessages(userId);
-
       socket.broadcast.emit("user:status_change", {
         userId: onlineStatus.id,
         isOnline: onlineStatus.isOnline,
       });
 
+      const offlineMessages = await MessageServices.getOfflineMessages(userId);
       offlineMessages.forEach((message) => {
         socket.to(`user-room:${userId}`).emit("message:delivered_bulk", {
           conversationId: message.conversationId,

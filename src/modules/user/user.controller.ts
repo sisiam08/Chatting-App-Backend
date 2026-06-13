@@ -64,10 +64,17 @@ const getAllUsers = async (req: Request, res: Response) => {
 const updateUserInfo = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
-    const updateData: IUpdateUserInfo = {};
     const { name, phone } = req.body;
+    const file = req.file as Express.Multer.File;
+
+    const updateData: IUpdateUserInfo = {};
+
     if (name) updateData.name = name;
     if (phone) updateData.phone = phone;
+
+    if (file) {
+      updateData.image = (file as any).path || (file as any).url;
+    }
 
     const result = await UserServices.updateUserInfo(userId!, updateData);
 
