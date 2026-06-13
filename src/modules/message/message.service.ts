@@ -99,9 +99,34 @@ const updateMessageSeen = async (conversationId: string, userId: string) => {
   });
 };
 
+const offlineMessages = async (userId: string) => {
+  const messages = await prisma.message.findMany({
+    where: {
+      conversation: {
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+      deliveredAt: null,
+    },
+    orderBy: {
+      conversationId: "asc",
+    },
+  });
+
+  messages.forEach(async (message) => {
+    await updateMessageDelivered(message.id);
+  });
+
+  return messages;
+};
+
 export const MessageServices = {
   sendMessage,
   getMessages,
   updateMessageDelivered,
   updateMessageSeen,
+  offlineMessages,
 };

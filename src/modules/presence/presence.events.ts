@@ -1,4 +1,5 @@
 import { getIO } from "../../config/socket";
+import { MessageServices } from "../message/message.service";
 import { PresenceServices } from "./presence.service";
 
 const onlineUser = async (socket: any) => {
@@ -8,11 +9,24 @@ const onlineUser = async (socket: any) => {
 
   if (connectedDevicesCount === 1) {
     try {
-      const onlineStatus = await PresenceServices.updateOnlineStatus(userId, true);
+      const onlineStatus = await PresenceServices.updateOnlineStatus(
+        userId,
+        true,
+      );
+
+      const offlineMessages = await MessageServices.offlineMessages(userId);
 
       socket.broadcast.emit("user:status_change", {
         userId: onlineStatus.id,
         isOnline: onlineStatus.isOnline,
+      });
+
+      offlineMessages.forEach((message) => {
+        socket.to(`user-room:${userId}`).emit("message:delivered_bulk", {
+          conversationId: message.conversationId,
+          content: message.content,
+          deliveredAt: message.deliveredAt,
+        });
       });
     } catch (err) {
       console.error("Error updating online status:", err);
@@ -28,7 +42,10 @@ const offlineUser = (socket: any) => {
 
     if (connectedDevicesCount === 0) {
       try {
-        const offlineStatus = await PresenceServices.updateOnlineStatus(userId, false);
+        const offlineStatus = await PresenceServices.updateOnlineStatus(
+          userId,
+          false,
+        );
 
         getIO().emit("user:status_change", {
           userId: offlineStatus.id,
