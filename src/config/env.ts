@@ -7,13 +7,10 @@ export const envVar = {
   port: process.env.PORT,
   databaseURL: process.env.DATABASE_URL,
   appUrl: process.env.APP_URL!,
-  betterAuth: {
-    betterAuthUrl: process.env.BETTER_AUTH_URL!,
-    betterAuthSecret: process.env.BETTER_AUTH_SECRET,
-  },
+  apiUrl: process.env.API_URL!,
   google: {
-    gooleClientId: process.env.GOOGLE_CLIENT_ID,
-    gooleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
   cloudinary: {
     cloudinaryCloudName: process.env.CLOUDEINARY_CLOUD_NAME!,

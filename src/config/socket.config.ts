@@ -11,7 +11,7 @@ let io: Server;
 export const initSocket = (httpServer: http.Server) => {
   io = new Server(httpServer, {
     cors: {
-      origin: [envVar.appUrl, envVar.betterAuth.betterAuthUrl],
+      origin: [envVar.appUrl, envVar.apiUrl],
       credentials: true,
     },
   });
@@ -19,13 +19,11 @@ export const initSocket = (httpServer: http.Server) => {
   io.use(socketAuth);
 
   io.on("connection", (socket) => {
-    socket.join(`user-room:${socket.data.user.id}`);
+    socket.join(`user-room:${socket.data.userId}`);
 
     console.log("Socket Connected with :", {
       socketId: socket.id,
-      userId: socket.data.user.id,
-      userName: socket.data.user.name,
-      userEmail: socket.data.user.email,
+      userId: socket.data.userId,
     });
 
     PresenceSocketEvents(socket);

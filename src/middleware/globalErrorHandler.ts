@@ -25,6 +25,18 @@ export const globalErrorHandler = async (
   const isDevelopment = process.env.NODE_ENV === "development";
   const stack = isDevelopment ? (err as Error).stack : undefined;
 
+  // Log full error for debugging
+  if (isDevelopment) {
+    console.error("[GlobalErrorHandler] Error:", {
+      message: err instanceof Error ? err.message : String(err),
+      code: (err as any).code,
+      statusCode: (err as any).statusCode,
+      path: req.path,
+      method: req.method,
+      stack: stack,
+    });
+  }
+
   if (req.file) {
     await deleteFileFromCloudinary(req.file.path);
   }

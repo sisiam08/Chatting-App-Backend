@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
 import cookie from "cookie";
-import { auth } from "../lib/auth";
 import createAppError from "../errors/appError";
 import status from "http-status";
+import Session from "supertokens-node/recipe/session";
 
 export const socketAuth = async (socket: Socket, next: any) => {
   try {
@@ -13,27 +13,30 @@ export const socketAuth = async (socket: Socket, next: any) => {
       return;
     }
 
-    const parsedCookies = cookie.parse(handshakeCookies);
+    const cookies = cookie.parse(handshakeCookies);
 
-    const sessionToken = parsedCookies["better-auth.session_token"];
+    const accessToken = cookies["sAccessToken"];
+    const frontToken = cookies["sFrontToken"];
 
-    if (!sessionToken) {
-      createAppError("No session token found in cookies", status.BAD_REQUEST);
+    if (!accessToken) {
+      createAppError(
+        "Authentication error: Access token missing",
+        status.BAD_REQUEST,
+      );
       return;
     }
 
-    const session = await auth.api.getSession({
-      headers: {
-        cookie: `better-auth.session_token=${sessionToken}`,
-      },
-    });
+    const session = await Session.getSessionWithoutRequestResponse(
+      accessToken,
+      frontToken,
+    );
 
-    if (!session || !session.user) {
+    if (!session) {
       createAppError("Invalid session", status.UNAUTHORIZED);
       return;
     }
 
-    socket.data.user = session.user;
+    socket.data.userId = session.getUserId();
 
     next();
   } catch (error) {

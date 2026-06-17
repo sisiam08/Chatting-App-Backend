@@ -18,7 +18,7 @@ const joinConversation = (socket: any) => {
     const isMember = await prisma.conversationMember.findFirst({
       where: {
         conversationId,
-        userId: socket.data.user.id,
+        userId: socket.data.userId,
       },
     });
     if (!isMember) {
@@ -45,7 +45,7 @@ const leaveConversation = (socket: any) => {
 
 const typingMessage = (socket: any) => {
   socket.on("typing:start", (conversationId: string) => {
-    const userId = socket.data.user.id;
+    const userId = socket.data.userId;
 
     socket.to(`conversation:${conversationId}`).emit("typing:start", {
       conversationId,
@@ -54,7 +54,7 @@ const typingMessage = (socket: any) => {
   });
 
   socket.on("typing:stop", (conversationId: string) => {
-    const userId = socket.data.user.id;
+    const userId = socket.data.userId;
     socket.to(`conversation:${conversationId}`).emit("typing:stop", {
       conversationId,
       userId,

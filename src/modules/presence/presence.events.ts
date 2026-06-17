@@ -3,7 +3,7 @@ import { MessageServices } from "../message/message.service";
 import { PresenceServices } from "./presence.service";
 
 const onlineUser = async (socket: any) => {
-  const userId = socket.data.user.id;
+  const userId = socket.data.userId;
   const userRoom = getIO().sockets.adapter.rooms.get(`user-room:${userId}`);
   const connectedDevicesCount = userRoom ? userRoom.size : 0;
 
@@ -35,7 +35,7 @@ const onlineUser = async (socket: any) => {
 
 const offlineUser = (socket: any) => {
   socket.on("disconnect", async () => {
-    const userId = socket.data.user.id;
+    const userId = socket.data.userId;
     const userRoom = getIO().sockets.adapter.rooms.get(`user-room:${userId}`);
     const connectedDevicesCount = userRoom ? userRoom.size : 0;
 

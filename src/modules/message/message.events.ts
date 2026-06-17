@@ -8,11 +8,14 @@ import { MessageServices } from "./message.service";
 const sendTextMessage = (socket: any) => {
   socket.on("message:send", async (data: ISocketMessagePayload) => {
     const { conversationId, content } = data;
-    const userId = socket.data.user.id;
+    const userId = socket.data.userId;
 
     const hasAccess = socket.data.allowedRooms?.has(conversationId);
     if (!hasAccess) {
-      createAppError("User does not have access to this conversation", status.FORBIDDEN);
+      createAppError(
+        "User does not have access to this conversation",
+        status.FORBIDDEN,
+      );
       return;
     }
 
@@ -29,11 +32,14 @@ const sendTextMessage = (socket: any) => {
 
 const seenMessage = (socket: any) => {
   socket.on("message:seen", async (conversationId: string) => {
-    const userId = socket.data.user.id;
+    const userId = socket.data.userId;
 
     const hasAccess = socket.data.allowedRooms?.has(conversationId);
     if (!hasAccess) {
-      createAppError("User does not have access to this conversation", status.FORBIDDEN);
+      createAppError(
+        "User does not have access to this conversation",
+        status.FORBIDDEN,
+      );
       return;
     }
 
